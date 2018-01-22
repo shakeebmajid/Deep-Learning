@@ -31,9 +31,9 @@ class Neuron:
             i += 1
 
         return self.sigmoid(weightedSum)
-        
+
     def crossEntropy(self, inputs, weights, target):
         estimate = self.output(inputs, weights)
-        crossEntropy = target * math.log(estimate) + (1 - target) * math.log(1 - estimate)
+        crossEntropy = -(target * math.log(estimate) + (1 - target) * math.log(1 - estimate))
 
         return crossEntropy
