@@ -19,13 +19,8 @@ class Neuron:
 
         return self.ReLu(weightedSum)
 
-    def crossEntropy(self, inputs, weights, targets):
-        crossEntropy = 0
+    def crossEntropy(self, inputs, weights, target):
         estimate = process(inputs, weights)
-
-        for target in targets:
-            crossEntropy += target * math.log(estimate) + (1 - target) * math.log(1 - estimate)
-
-
-        averageCrossEntropy = crossEntropy / len(targets)
-        return averageCrossEntropy
+        crossEntropy = target * math.log(estimate) + (1 - target) * math.log(1 - estimate)
+                
+        return crossEntropy
