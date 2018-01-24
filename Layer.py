@@ -1,7 +1,10 @@
 import numpy
 class Layer:
-    def __init__(self, neurons):
-        self.neurons = neurons
+    def __init__(self, layerSize):
+        self.neurons = []
+        for i in range(layerSize):
+            neuron = Neuron()
+            neurons.append(neuron)
 
 
     def feedForward(self, inputs, weightMatrix):
