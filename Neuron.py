@@ -49,9 +49,16 @@ class Neuron:
     def dOutput(self, inputs, weights):
         weightedSum = self.weightedSum(inputs, weights)
 
+        return dSigmoid(weightedSum)
+
     def crossEntropy(self, inputs, weights, target):
         estimate = self.output(inputs, weights)
 
         crossEntropy = -(target * math.log(estimate) + (1 - target) * math.log(1 - estimate))
 
         return crossEntropy
+
+    def dCost(self, inputs, weights, target):
+        activation = self.output(inputs, weights)
+
+        dCost = -(target / activation - (1 - target) / (1 - activation))

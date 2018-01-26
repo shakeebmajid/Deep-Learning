@@ -32,4 +32,8 @@ class Layer:
             dOutputs.append(neuron.dOutput(inputs, weights))
 
         return dOutputs
-        return cost
+
+    def dCosts(self, inputs, weightMatrix, targets):
+        dCosts = []
+        for neuron, weights, target in zip(self.neurons, weightMatrix, target):
+            dCosts.append(neuron.dCost(inputs, weights, target))
