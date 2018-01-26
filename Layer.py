@@ -36,6 +36,13 @@ class Layer:
 
         return dOutputs
 
+    def dReLus(self, inputs, weightMatrix):
+        dReLus = []
+        for neuron, weights in zip(self.neurons, weightMatrix):
+            dReLus.append(neuron.dReLu(inputs, weights))
+
+        return dReLus
+
     def dCosts(self, inputs, weightMatrix, targets):
         dCosts = []
         for neuron, weights, target in zip(self.neurons, weightMatrix, target):
