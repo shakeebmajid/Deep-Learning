@@ -1,0 +1,19 @@
+import numpy
+
+class FeedForwardNetwork:
+    #depth specifies number of hidden layers as there is always one input layer and one output layer
+    def __init__(self, depth):
+        self.network = []
+
+        #hidden layers initialized
+        for i in range(depth):
+            layerSize = int(raw_input('Layer Size:'))
+            layer = Layer(layerSize)
+            self.network.append(layer)
+
+        #output layer which will likely have different activation functions
+        layer = Layer()
+        self.networks.append(layer)
+
+    def feedForward(inputs, weightMatrices):
+        for layer in self.network:
