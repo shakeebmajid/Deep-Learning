@@ -1,4 +1,4 @@
-import math
+import numpy
 
 class Neuron:
     def ReLu(self, x):
@@ -29,7 +29,7 @@ class Neuron:
         return self.ReLu(weightedSum)
 
     def sigmoid(self, x):
-        return 1 / (1 + math.exp(-x))
+        return 1 / (1 + numpy.exp(-x))
 
     def dSigmoid(self, x):
         return self.sigmoid(x) * (1 - self.sigmoid(x))
@@ -54,11 +54,13 @@ class Neuron:
     def crossEntropy(self, inputs, weights, target):
         estimate = self.output(inputs, weights)
 
-        crossEntropy = -(target * math.log(estimate) + (1 - target) * math.log(1 - estimate))
+        crossEntropy = -(target * numpy.log(estimate + 0.000000000001) + (1 - target) * numpy.log(1 - estimate + 0.000000000001))
 
         return crossEntropy
 
     def dCost(self, inputs, weights, target):
         activation = self.output(inputs, weights)
 
-        dCost = -(target / activation - (1 - target) / (1 - activation))
+        dCost = -(target / (activation + 0.000000000001)  - (1 - target) / (1 - activation + 0.000000000001))
+
+        return dCost
