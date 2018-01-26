@@ -8,19 +8,28 @@ class Layer:
 
 
     def feedForward(self, inputs, weightMatrix):
-        i = 0
+        #i = 0
         outputs = []
-        for neuron in self.neurons:
-            weights = weightMatrix[i]
+        for neuron, weights in zip(self.neurons, weightMatrix):
+            #weights = weightMatrix[i]
             outputs.append(neuron.process(inputs, weights))
-            i += 1
+            #i += 1
 
         return outputs
 
-    def layerCost(self, inputs, weightMatrix, targets):
-        cost = 0
+    def output(self, inputs, weightMatrix):
+        outputs = []
+        for neuron, weights in zip(self.neurons, weightMatrix):
+            #weights = weightMatrix[i]
+            outputs.append(neuron.output(inputs, weights))
+            #i += 1
 
-        for neuron, weights, target in zip(self.neurons, weightMatrix, targets):
-            cost += neuron.crossEntropy(inputs, weights, target)
+        return outputs
 
+    def dOutputs(self, inputs, weightMatrix):
+        dOutputs = []
+        for neuron, weights in zip(self.neurons, weightMatrix):
+            dOutputs.append(neuron.dOutput(inputs, weights))
+
+        return dOutputs
         return cost
