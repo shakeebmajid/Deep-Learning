@@ -1,9 +1,12 @@
 import numpy
+import Neuron
+from Neuron import *
+
 class Layer:
-    def __init__(self, layerSize):
+    def __init__(self, width):
         self.neurons = []
-        for i in range(layerSize):
-            neuron = Neuron()
+        for i in range(width):
+            self.neurons.append(Neuron())
             neurons.append(neuron)
 
 
@@ -37,3 +40,5 @@ class Layer:
         dCosts = []
         for neuron, weights, target in zip(self.neurons, weightMatrix, target):
             dCosts.append(neuron.dCost(inputs, weights, target))
+
+        return dCosts
