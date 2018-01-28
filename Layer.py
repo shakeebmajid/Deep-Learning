@@ -19,7 +19,7 @@ class Layer:
 
         return outputs
 
-    def output(self, inputs, weightMatrix):
+    def outputs(self, inputs, weightMatrix):
         outputs = []
         for neuron, weights in zip(self.neurons, weightMatrix):
             #weights = weightMatrix[i]
@@ -38,13 +38,13 @@ class Layer:
     def dReLus(self, inputs, weightMatrix):
         dReLus = []
         for neuron, weights in zip(self.neurons, weightMatrix):
-            dReLus.append(neuron.dReLu(inputs, weights))
+            dReLus.append(neuron.dProcess(inputs, weights))
 
         return dReLus
 
     def dCosts(self, inputs, weightMatrix, targets):
         dCosts = []
-        for neuron, weights, target in zip(self.neurons, weightMatrix, target):
+        for neuron, weights, target in zip(self.neurons, weightMatrix, targets):
             dCosts.append(neuron.dCost(inputs, weights, target))
 
         return dCosts

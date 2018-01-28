@@ -28,6 +28,10 @@ class Neuron:
         weightedSum = self.weightedSum(inputs, weights)
         return self.ReLu(weightedSum)
 
+    def dProcess(self, inputs, weights):
+        weightedSum = self.weightedSum(inputs, weights)
+        return self.dReLu(weightedSum)
+
     def sigmoid(self, x):
         return 1 / (1 + numpy.exp(-x))
 
@@ -49,7 +53,7 @@ class Neuron:
     def dOutput(self, inputs, weights):
         weightedSum = self.weightedSum(inputs, weights)
 
-        return dSigmoid(weightedSum)
+        return self.dSigmoid(weightedSum)
 
     def crossEntropy(self, inputs, weights, target):
         estimate = self.output(inputs, weights)
