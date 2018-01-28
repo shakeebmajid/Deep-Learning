@@ -7,7 +7,6 @@ class Layer:
         self.neurons = []
         for i in range(width):
             self.neurons.append(Neuron())
-            neurons.append(neuron)
 
 
     def feedForward(self, inputs, weightMatrix):
