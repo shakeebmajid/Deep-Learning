@@ -57,3 +57,10 @@ class FeedForwardNetwork:
             weightTranspose = weightMatrix.transpose()
             previousDelta = self.delta(l + 1)
             dReLus = numpy.array(self.dOutputs[l])
+
+    def dWeights(self, l):
+        activations = numpy.array(self.activations[l - 1])
+        deltas = numpy.array(self.delta(l))
+        transposeDeltas = activations.transpose()
+
+        dWeights = transposeDeltas.dot(activations)
