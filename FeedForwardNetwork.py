@@ -40,3 +40,13 @@ class FeedForwardNetwork:
         outputs = self.network[depth].output(inputs, self.weightMatrices[depth])
 
         return outputs
+
+    def error(self, inputs, weightMatrix, targets):
+        outputLayer = self.network[self.depth]
+        dCosts = numpy.array(outputLayer.dCosts(inputs, weightMatrix, targets))
+        dSigmoids = numpy.array(outputLayer.dSigmoids(inputs, weightMatrix, targets))
+
+        return numpy.multiply(dCosts, dSigmoids)
+
+
+    def error()
