@@ -33,17 +33,21 @@ class FeedForwardNetwork:
 
     def feedForward(self, inputs, targets):
         #passing outputs from one layer to the next
+        self.activations = []
+        self.dOutputs = []
+        self.dCosts = []
+        self.inputs = inputs
         for i, weightMatrix in zip(range(self.depth), self.weightMatrices):
             layer = self.network[i]
             inputs = layer.feedForward(inputs, weightMatrix)
-            self.activations[i] = inputs
-            self.dOutputs[i] = layer.dReLus(inputs, weightMatrix)
+            self.activations.append(inputs)
+            self.dOutputs.append(layer.dReLus(inputs, weightMatrix))
 
         #output of output layer
         outputLayer = self.network[self.depth]
         outputs = outputLayer.outputs(inputs, self.weightMatrices[self.depth])
-        self.dOutputs[self.depth] = outputLayer.dOutputs(inputs, self.weightMatrices[depth])
-        self.dCosts = outputLayer.dCosts(inputs, self.weightMatrices[depth], targets)
+        self.dOutputs.append(outputLayer.dOutputs(inputs, self.weightMatrices[self.depth]))
+        self.dCosts = outputLayer.dCosts(inputs, self.weightMatrices[self.depth], targets)
         return outputs
 
     def delta(self, l):
@@ -59,8 +63,14 @@ class FeedForwardNetwork:
             dReLus = numpy.array(self.dOutputs[l])
 
     def dWeights(self, l):
-        activations = numpy.array(self.activations[l - 1])
-        deltas = numpy.array(self.delta(l))
-        transposeDeltas = activations.transpose()
+        if l = 0:
+            activations = numpy.array([self.inputs])
+        else:
+            activations = numpy.array([self.activations[l - 1]])
 
+        deltas = numpy.array([self.delta(l)])
+        transposeDeltas = deltas.transpose()
+        print(transposeDeltas)
+        print(activations)
         dWeights = transposeDeltas.dot(activations)
+        return dWeights
