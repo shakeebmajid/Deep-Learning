@@ -31,22 +31,29 @@ class FeedForwardNetwork:
         self.weightMatrices.append(weightMatrix)
 
 
-    def feedForward(self, inputs):
+    def feedForward(self, inputs, targets):
         #passing outputs from one layer to the next
         for i, weightMatrix in zip(range(self.depth), self.weightMatrices):
-            inputs = self.network[i].feedForward(inputs, weightMatrix)
+            layer = self.network[i]
+            inputs = layer.feedForward(inputs, weightMatrix)
+            self.activations[i] = inputs
+            self.dOutputs[i] = layer.dReLus(inputs, weightMatrix)
 
         #output of output layer
-        outputs = self.network[depth].output(inputs, self.weightMatrices[depth])
-
+        outputLayer = self.network[self.depth]
+        outputs = outputLayer.outputs(inputs, self.weightMatrices[self.depth])
+        self.dOutputs[self.depth] = outputLayer.dOutputs(inputs, self.weightMatrices[depth])
+        self.dCosts = outputLayer.dCosts(inputs, self.weightMatrices[depth], targets)
         return outputs
 
-    def error(self, inputs, weightMatrix, targets):
-        outputLayer = self.network[self.depth]
-        dCosts = numpy.array(outputLayer.dCosts(inputs, weightMatrix, targets))
-        dSigmoids = numpy.array(outputLayer.dSigmoids(inputs, weightMatrix, targets))
+    def delta(self, l):
+        if (l == self.depth):
+            dCosts = numpy.array(self.dCosts)
+            dSigmoids = numpy.array(self.dOutputs[l])
 
-        return numpy.multiply(dCosts, dSigmoids)
-
-
-    def error()
+            return numpy.multiply(dCosts, dSigmoids)
+        else:
+            weightMatrix = numpy.array(self.weightMatrices[l])
+            weightTranspose = weightMatrix.transpose()
+            previousDelta = self.delta(l + 1)
+            dReLus = numpy.array(self.dOutputs[l])

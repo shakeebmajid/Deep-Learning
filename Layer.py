@@ -19,7 +19,7 @@ class Layer:
 
         return outputs
 
-    def output(self, inputs, weightMatrix):
+    def outputs(self, inputs, weightMatrix):
         outputs = []
         for neuron, weights in zip(self.neurons, weightMatrix):
             #weights = weightMatrix[i]
