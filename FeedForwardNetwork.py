@@ -1,6 +1,7 @@
 import numpy
 import Layer
 import Neuron
+import random
 from Layer import *
 
 
@@ -30,9 +31,9 @@ class FeedForwardNetwork:
         weightMatrix = numpy.random.rand(layerSize, inputSize)
         self.weightMatrices.append(weightMatrix)
 
-
     def feedForward(self, inputs, targets):
         #passing outputs from one layer to the next
+        #print("weight matrices: ", self.weightMatrices)
         self.activations = []
         self.dOutputs = []
         self.dCosts = []
@@ -46,31 +47,80 @@ class FeedForwardNetwork:
         #output of output layer
         outputLayer = self.network[self.depth]
         outputs = outputLayer.outputs(inputs, self.weightMatrices[self.depth])
+        self.activations.append(outputs)
         self.dOutputs.append(outputLayer.dOutputs(inputs, self.weightMatrices[self.depth]))
         self.dCosts = outputLayer.dCosts(inputs, self.weightMatrices[self.depth], targets)
         return outputs
 
     def delta(self, l):
         if (l == self.depth):
+            # print("l: ", l)
             dCosts = numpy.array(self.dCosts)
             dSigmoids = numpy.array(self.dOutputs[l])
 
             return numpy.multiply(dCosts, dSigmoids)
         else:
-            weightMatrix = numpy.array(self.weightMatrices[l])
-            weightTranspose = weightMatrix.transpose()
+            # print("l: ", l)
+            previousWeightMatrix = numpy.array(self.weightMatrices[l + 1])
+            previousWeightTranspose = previousWeightMatrix.transpose()
             previousDelta = self.delta(l + 1)
             dReLus = numpy.array(self.dOutputs[l])
+            # print("dRelus: ", dReLus)
+            # print("transpose: ", previousWeightTranspose)
+            # print("previous delta: ", previousDelta)
+            return numpy.multiply(previousWeightTranspose.dot(previousDelta), dReLus)
+
+
 
     def dWeights(self, l):
-        if l = 0:
+        if l == 0:
             activations = numpy.array([self.inputs])
         else:
             activations = numpy.array([self.activations[l - 1]])
 
-        deltas = numpy.array([self.delta(l)])
-        transposeDeltas = deltas.transpose()
-        print(transposeDeltas)
-        print(activations)
+        transposeDeltas = numpy.array([self.delta(l)]).transpose()
+
+        #print("transpose: ", transposeDeltas)
+        #print("activations: ", activations)
         dWeights = transposeDeltas.dot(activations)
+        #print("dWeights: ", dWeights)
         return dWeights
+
+    def backProp(self, learningRate):
+        network = self.network
+        for i, layer in reversed(list(enumerate(network))):
+            # print i, "weights: ", self.weightMatrices[i], "dCost / dWeights: ", self.dWeights(i)
+            #print("pre: ", self.weightMatrices[i])
+            #print("pre: ", self.weightMatrices)
+            self.weightMatrices[i] = self.weightMatrices[i] - learningRate * self.dWeights(i)
+            #print("change: ", self.weightMatrices[i] - learningRate * self.dWeights(i))
+            #print("post: ", self.weightMatrices[i])
+            #print("post: ", self.weightMatrices)
+
+            #print self.dWeights(i)
+
+    def trainItem(self, inputs, targets, learningRate):
+        self.feedForward(inputs, targets)
+        self.backProp(learningRate)
+
+    def train(self, trainingSize, learningRate):
+        #write
+        f = open("XOR-training.txt", "w+")
+        for i in range(trainingSize):
+            a = bool(random.getrandbits(1))
+            b = bool(random.getrandbits(1))
+            f.write (str(int(a)) + " " + str(int(b)) + " " + str(int(a ^ b)) + "\n")
+            #f.write("This is line %d\r\n" % (i+1))
+
+        f.close()
+
+
+        alist = [line.rstrip() for line in open('XOR-training.txt')]
+        for line in alist:
+            #print(line.split())
+            trainingItem = line.split()
+            a = int(trainingItem[0])
+            b = int(trainingItem[1])
+            inputs = [a, b]
+            target = [int(trainingItem[2])]
+            self.trainItem(inputs, target, learningRate)
