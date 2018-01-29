@@ -25,7 +25,7 @@ class Layer:
             #weights = weightMatrix[i]
             outputs.append(neuron.output(inputs, weights))
             #i += 1
-        
+
         return outputs
 
     def dOutputs(self, inputs, weightMatrix):
