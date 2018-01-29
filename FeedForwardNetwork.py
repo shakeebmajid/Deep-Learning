@@ -46,31 +46,48 @@ class FeedForwardNetwork:
         #output of output layer
         outputLayer = self.network[self.depth]
         outputs = outputLayer.outputs(inputs, self.weightMatrices[self.depth])
+        self.activations.append(outputs)
         self.dOutputs.append(outputLayer.dOutputs(inputs, self.weightMatrices[self.depth]))
         self.dCosts = outputLayer.dCosts(inputs, self.weightMatrices[self.depth], targets)
         return outputs
 
     def delta(self, l):
         if (l == self.depth):
+            # print("l: ", l)
             dCosts = numpy.array(self.dCosts)
             dSigmoids = numpy.array(self.dOutputs[l])
 
             return numpy.multiply(dCosts, dSigmoids)
         else:
-            weightMatrix = numpy.array(self.weightMatrices[l])
-            weightTranspose = weightMatrix.transpose()
+            # print("l: ", l)
+            previousWeightMatrix = numpy.array(self.weightMatrices[l + 1])
+            previousWeightTranspose = previousWeightMatrix.transpose()
             previousDelta = self.delta(l + 1)
             dReLus = numpy.array(self.dOutputs[l])
+            # print("dRelus: ", dReLus)
+            # print("transpose: ", previousWeightTranspose)
+            # print("previous delta: ", previousDelta)
+            return numpy.multiply(previousWeightTranspose.dot(previousDelta), dReLus)
+
+
 
     def dWeights(self, l):
-        if l = 0:
+        if l == 0:
             activations = numpy.array([self.inputs])
         else:
             activations = numpy.array([self.activations[l - 1]])
 
-        deltas = numpy.array([self.delta(l)])
-        transposeDeltas = deltas.transpose()
-        print(transposeDeltas)
-        print(activations)
+        transposeDeltas = numpy.array([self.delta(l)]).transpose()
+
         dWeights = transposeDeltas.dot(activations)
         return dWeights
+
+    def backProp(self, learningRate):
+        network = self.network
+        for i, layer in reversed(list(enumerate(network))):
+            # print i, "weights: ", self.weightMatrices[i], "dCost / dWeights: ", self.dWeights(i)
+            self.weightMatrices[i] = self.weightMatrices[i] - learningRate * self.dWeights(i)
+
+    def trainItem(self, inputs, targets, learningRate):
+        self.feedForward(inputs, targets)
+        self.backProp(learningRate)
