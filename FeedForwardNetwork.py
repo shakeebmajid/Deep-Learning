@@ -50,7 +50,14 @@ class FeedForwardNetwork:
         self.activations.append(outputs)
         self.dOutputs.append(outputLayer.dOutputs(inputs, self.weightMatrices[self.depth]))
         self.dCosts = outputLayer.dCosts(inputs, self.weightMatrices[self.depth], targets)
+
+        self.cost = self.totalCost(outputLayer, inputs, self.weightMatrices[self.depth], targets)
         return outputs
+
+    def totalCost(self, layer, inputs, weightMatrix, targets):
+        costs = layer.costs(inputs, weightMatrix, targets)
+        totalCost = numpy.sum(costs)
+        return totalCost
 
     def delta(self, l):
         if (l == self.depth):
