@@ -42,6 +42,13 @@ class Layer:
 
         return dReLus
 
+    def costs(self, inputs, weightMatrix, targets):
+        costs = []
+        for neuron, weights, target in zip(self.neurons, weightMatrix, targets):
+            costs.append(neuron.crossEntropy(inputs, weights, target))
+
+        return costs
+
     def dCosts(self, inputs, weightMatrix, targets):
         dCosts = []
         for neuron, weights, target in zip(self.neurons, weightMatrix, targets):
