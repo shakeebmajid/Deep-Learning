@@ -15,7 +15,7 @@ n = Neuron()
 
 l = Layer(5)
 
-network = FeedForwardNetwork(1)
+network = FeedForwardNetwork(3)
 
 print network.feedForward([1, 1], [0])
 print network.feedForward([0, 0], [0])
@@ -23,6 +23,7 @@ print network.feedForward([1, 0], [1])
 print network.feedForward([0, 1], [1])
 
 print network.weightMatrices
+print "Cost:", network.cost
 
 trainingSize = 100000
 learningRate = 0.05
@@ -34,6 +35,7 @@ print network.feedForward([1, 1], [0])
 print network.feedForward([0, 0], [0])
 print network.feedForward([1, 0], [1])
 print network.feedForward([0, 1], [1])
+print "Cost:", network.cost
 
 
 # network = FeedForwardNetwork(1)
