@@ -127,7 +127,7 @@ class FeedForwardNetwork:
         return dWeightMatrices
 
     def gradientDescent(self, learningRate, dWeightsAverage):
-        self.weightMatrices = (numpy.array(self.weightMatrices) + (learningRate * numpy.array(dWeightsAverage)).tolist()).tolist()
+        self.weightMatrices = (numpy.array(self.weightMatrices) - (learningRate * numpy.array(dWeightsAverage)).tolist()).tolist()
 
 
     def trainItem(self, inputs, targets, learningRate):
@@ -150,6 +150,7 @@ class FeedForwardNetwork:
         alist = [line.rstrip() for line in open('XOR-training.txt')]
         batchNum = 1
         accumulatedWeights = (0 * numpy.array(self.weightMatrices)).tolist()
+        totalCost = 0
         i = 1
         for line in alist:
             #print(line.split())
@@ -161,11 +162,17 @@ class FeedForwardNetwork:
             self.feedForward(inputs, target)
             accumulatedWeights = (numpy.array(accumulatedWeights) + numpy.array(self.backProp())).tolist()
             #self.trainItem(inputs, target, learningRate)
-
+            totalCost += self.cost
             if i == batchSize:
                 dWeightsAverage = (numpy.array(accumulatedWeights) / batchSize).tolist()
+                averageCost = totalCost / batchSize
+                print "total cost:", totalCost, "average cost:", averageCost
+                if averageCost == 0:
+                    break
+
                 self.gradientDescent(learningRate, dWeightsAverage)
                 i = 0
+                totalCost = 0
                 accumulatedWeights = (0 * numpy.array(self.weightMatrices)).tolist()
                 print "Batch #", batchNum
                 batchNum += 1
