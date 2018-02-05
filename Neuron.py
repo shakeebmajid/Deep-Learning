@@ -58,13 +58,13 @@ class Neuron:
     def crossEntropy(self, inputs, weights, target):
         estimate = self.output(inputs, weights)
 
-        crossEntropy = -(target * numpy.log(estimate + 0.000000000001) + (1 - target) * numpy.log(1 - estimate + 0.000000000001))
+        crossEntropy = -(target * numpy.log(estimate + 0.00000000000000000000001) + (1 - target) * numpy.log(1 - estimate + 0.00000000000000000000001))
 
         return crossEntropy
 
     def dCost(self, inputs, weights, target):
         activation = self.output(inputs, weights)
 
-        dCost = -(target / (activation + 0.000000000001) - (1 - target) / (1 - activation + 0.000000000001))
+        dCost = -(target / (activation + 0.00000000000000000000001) - (1 - target) / (1 - activation + 0.00000000000000000000001))
 
         return dCost

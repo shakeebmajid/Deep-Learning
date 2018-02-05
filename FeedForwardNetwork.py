@@ -12,6 +12,7 @@ class FeedForwardNetwork:
         self.network = []
         self.depth = depth
         self.weightMatrices = []
+        #self.dWeightMatrices = []
         #input size used for initializing first weight matrix
         inputSize = int(input('Input Size: '))
         #hidden layers initialized
@@ -19,6 +20,7 @@ class FeedForwardNetwork:
             layerSize = int(input('Layer Size: '))
             weightMatrix = numpy.random.rand(layerSize, inputSize + 1)
             self.weightMatrices.append(weightMatrix)
+            #self.dWeightMatrices.append(numpy.zeros(layerSize, inputSize + 1))
             layer = Layer(layerSize)
             self.network.append(layer)
             inputSize = layerSize
@@ -30,7 +32,7 @@ class FeedForwardNetwork:
 
         weightMatrix = numpy.random.rand(layerSize, inputSize + 1)
         self.weightMatrices.append(weightMatrix)
-
+        #self.dWeightMatrices.append(numpy.zeros(layerSize, inputSize + 1))
 
     def feedForward(self, inputs, targets):
         #passing outputs from one layer to the next
@@ -108,18 +110,24 @@ class FeedForwardNetwork:
         return dWeights
 
 
-    def backProp(self, learningRate):
+    def backProp(self):
         network = self.network
+        dWeightMatrices = (0 * numpy.array(self.weightMatrices)).tolist()
         for i, layer in reversed(list(enumerate(network))):
             # print i, "weights: ", self.weightMatrices[i], "dCost / dWeights: ", self.dWeights(i)
             #print("pre: ", self.weightMatrices[i])
             #print("pre: ", self.weightMatrices)
-            self.weightMatrices[i] = self.weightMatrices[i] - learningRate * self.dWeights(i)
+            dWeightMatrices[i] = self.dWeights(i)
             #print("change: ", self.weightMatrices[i] - learningRate * self.dWeights(i))
             #print("post: ", self.weightMatrices[i])
             #print("post: ", self.weightMatrices)
 
             #print self.dWeights(i)
+
+        return dWeightMatrices
+
+    def gradientDescent(self, learningRate, dWeightsAverage):
+        self.weightMatrices = (numpy.array(self.weightMatrices) + (learningRate * numpy.array(dWeightsAverage)).tolist()).tolist()
 
 
     def trainItem(self, inputs, targets, learningRate):
@@ -127,7 +135,7 @@ class FeedForwardNetwork:
         self.backProp(learningRate)
 
 
-    def train(self, trainingSize, learningRate):
+    def train(self, trainingSize, learningRate, batchSize):
         #write
         f = open("XOR-training.txt", "w+")
         for i in range(trainingSize):
@@ -140,6 +148,9 @@ class FeedForwardNetwork:
 
 
         alist = [line.rstrip() for line in open('XOR-training.txt')]
+        batchNum = 1
+        accumulatedWeights = (0 * numpy.array(self.weightMatrices)).tolist()
+        i = 1
         for line in alist:
             #print(line.split())
             trainingItem = line.split()
@@ -147,4 +158,15 @@ class FeedForwardNetwork:
             b = int(trainingItem[1])
             inputs = [a, b]
             target = [int(trainingItem[2])]
-            self.trainItem(inputs, target, learningRate)
+            self.feedForward(inputs, target)
+            accumulatedWeights = (numpy.array(accumulatedWeights) + numpy.array(self.backProp())).tolist()
+            #self.trainItem(inputs, target, learningRate)
+
+            if i == batchSize:
+                dWeightsAverage = (numpy.array(accumulatedWeights) / batchSize).tolist()
+                self.gradientDescent(learningRate, dWeightsAverage)
+                i = 0
+                accumulatedWeights = (0 * numpy.array(self.weightMatrices)).tolist()
+                print "Batch #", batchNum
+                batchNum += 1
+            i += 1

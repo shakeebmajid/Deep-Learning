@@ -15,27 +15,33 @@ n = Neuron()
 
 l = Layer(5)
 
-network = FeedForwardNetwork(3)
+network = FeedForwardNetwork(1)
 
-print network.feedForward([1, 1], [0])
-print network.feedForward([0, 0], [0])
-print network.feedForward([1, 0], [1])
-print network.feedForward([0, 1], [1])
-
-print network.weightMatrices
+print "inputs: [1, 1], target: 0, output:", network.feedForward([1, 1], [0])
+print "Cost:", network.cost
+print "inputs: [0, 0], target: 0, output:", network.feedForward([0, 0], [0])
+print "Cost:", network.cost
+print "inputs: [1, 0], target: 1, output:", network.feedForward([1, 0], [1])
+print "Cost:", network.cost
+print "inputs: [0, 1], target: 1, output:", network.feedForward([0, 1], [1])
 print "Cost:", network.cost
 
-trainingSize = 100000
+print "weight matrices:", network.weightMatrices
+
+trainingSize = int(input('Training Size: '))
 learningRate = 0.05
-network.train(trainingSize, learningRate)
+network.train(trainingSize, learningRate, 5)
 
-print network.weightMatrices
-
-print network.feedForward([1, 1], [0])
-print network.feedForward([0, 0], [0])
-print network.feedForward([1, 0], [1])
-print network.feedForward([0, 1], [1])
+print "inputs: [1, 1], target: 0, output:", network.feedForward([1, 1], [0])
 print "Cost:", network.cost
+print "inputs: [0, 0], target: 0, output:", network.feedForward([0, 0], [0])
+print "Cost:", network.cost
+print "inputs: [1, 0], target: 1, output:", network.feedForward([1, 0], [1])
+print "Cost:", network.cost
+print "inputs: [0, 1], target: 1, output:", network.feedForward([0, 1], [1])
+print "Cost:", network.cost
+
+print "weight matrices:", network.weightMatrices
 
 
 # network = FeedForwardNetwork(1)
