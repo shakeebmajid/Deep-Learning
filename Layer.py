@@ -16,7 +16,6 @@ class Layer:
             #weights = weightMatrix[i]
             outputs.append(neuron.process(inputs, weights))
             #i += 1
-
         return outputs
 
     def outputs(self, inputs, weightMatrix):

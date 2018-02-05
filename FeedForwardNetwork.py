@@ -17,7 +17,7 @@ class FeedForwardNetwork:
         #hidden layers initialized
         for i in range(depth):
             layerSize = int(input('Layer Size: '))
-            weightMatrix = numpy.random.rand(layerSize, inputSize)
+            weightMatrix = numpy.random.rand(layerSize, inputSize + 1)
             self.weightMatrices.append(weightMatrix)
             layer = Layer(layerSize)
             self.network.append(layer)
@@ -28,8 +28,9 @@ class FeedForwardNetwork:
         layer = Layer(layerSize)
         self.network.append(layer)
 
-        weightMatrix = numpy.random.rand(layerSize, inputSize)
+        weightMatrix = numpy.random.rand(layerSize, inputSize + 1)
         self.weightMatrices.append(weightMatrix)
+
 
     def feedForward(self, inputs, targets):
         #passing outputs from one layer to the next
@@ -40,9 +41,14 @@ class FeedForwardNetwork:
         self.inputs = inputs
         for i, weightMatrix in zip(range(self.depth), self.weightMatrices):
             layer = self.network[i]
+            #bias of positive 1
+            inputs.append(1)
             inputs = layer.feedForward(inputs, weightMatrix)
             self.activations.append(inputs)
             self.dOutputs.append(layer.dReLus(inputs, weightMatrix))
+
+        #bias for output layer
+        inputs.append(1)
 
         #output of output layer
         outputLayer = self.network[self.depth]
@@ -51,13 +57,16 @@ class FeedForwardNetwork:
         self.dOutputs.append(outputLayer.dOutputs(inputs, self.weightMatrices[self.depth]))
         self.dCosts = outputLayer.dCosts(inputs, self.weightMatrices[self.depth], targets)
 
+        #calcuate cost of training item
         self.cost = self.totalCost(outputLayer, inputs, self.weightMatrices[self.depth], targets)
         return outputs
+
 
     def totalCost(self, layer, inputs, weightMatrix, targets):
         costs = layer.costs(inputs, weightMatrix, targets)
         totalCost = numpy.sum(costs)
         return totalCost
+
 
     def delta(self, l):
         if (l == self.depth):
@@ -68,30 +77,36 @@ class FeedForwardNetwork:
             return numpy.multiply(dCosts, dSigmoids)
         else:
             # print("l: ", l)
-            previousWeightMatrix = numpy.array(self.weightMatrices[l + 1])
+            #print "stored matrix:", self.weightMatrices[l-1]
+            previousWeightMatrix = numpy.array(self.weightMatrices[l + 1][:, :-1])
+            #print "matrix minus column:", previousWeightMatrix
             previousWeightTranspose = previousWeightMatrix.transpose()
             previousDelta = self.delta(l + 1)
             dReLus = numpy.array(self.dOutputs[l])
-            # print("dRelus: ", dReLus)
-            # print("transpose: ", previousWeightTranspose)
-            # print("previous delta: ", previousDelta)
+            #print("dRelus: ", dReLus)
+            #print("transpose: ", previousWeightTranspose)
+            #print("previous delta: ", previousDelta)
+            #print "previous weight * previousDelta:", previousWeightTranspose.dot(previousDelta)
             return numpy.multiply(previousWeightTranspose.dot(previousDelta), dReLus)
-
 
 
     def dWeights(self, l):
         if l == 0:
-            activations = numpy.array([self.inputs])
+            activations = numpy.array(self.inputs)
         else:
-            activations = numpy.array([self.activations[l - 1]])
+            activations = numpy.array(self.activations[l - 1])
 
-        transposeDeltas = numpy.array([self.delta(l)]).transpose()
+        #transposeDeltas = numpy.array(self.delta(l)).transpose()
+        deltas = numpy.array(self.delta(l))
 
-        #print("transpose: ", transposeDeltas)
-        #print("activations: ", activations)
-        dWeights = transposeDeltas.dot(activations)
-        #print("dWeights: ", dWeights)
+        #bias
+        #activations = numpy.append(activations, [1])
+        #print "activations:", activations, "deltas:", deltas
+
+        #dWeights = transposeDeltas.dot(activations)
+        dWeights = numpy.outer([deltas], [activations])
         return dWeights
+
 
     def backProp(self, learningRate):
         network = self.network
@@ -106,9 +121,11 @@ class FeedForwardNetwork:
 
             #print self.dWeights(i)
 
+
     def trainItem(self, inputs, targets, learningRate):
         self.feedForward(inputs, targets)
         self.backProp(learningRate)
+
 
     def train(self, trainingSize, learningRate):
         #write

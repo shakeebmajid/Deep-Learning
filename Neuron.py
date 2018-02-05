@@ -65,6 +65,6 @@ class Neuron:
     def dCost(self, inputs, weights, target):
         activation = self.output(inputs, weights)
 
-        dCost = -(target / (activation + 0.000000000001)  - (1 - target) / (1 - activation + 0.000000000001))
+        dCost = -(target / (activation + 0.000000000001) - (1 - target) / (1 - activation + 0.000000000001))
 
         return dCost
