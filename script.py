@@ -32,7 +32,8 @@ print "weight matrices:", network.weightMatrices
 trainingSize = int(input('Training Size: '))
 batchSize = int(input('Batch Size: '))
 learningRate = int(input('Learning Rate: '))
-network.train(trainingSize, learningRate, batchSize)
+alpha = int(input('Momentum: '))
+network.trainWithMomentum(trainingSize, learningRate, batchSize, alpha)
 
 print "inputs: [1, 1], target: 0, output:", network.feedForward([1, 1], [0])
 print "Cost:", network.cost

@@ -130,6 +130,17 @@ class FeedForwardNetwork:
     def gradientDescent(self, learningRate, dWeightsAverage):
         self.weightMatrices = (numpy.array(self.weightMatrices) - (learningRate * numpy.array(dWeightsAverage)).tolist()).tolist()
 
+    def gradientDescentMomentum(self, learningRate, alpha, velocity, dWeightsAverage):
+        velocity = (alpha * numpy.array(velocity)) - (learningRate * numpy.array(dWeightsAverage))
+        print "g:", learningRate * numpy.array(dWeightsAverage)
+        print "alpha * v:", alpha * numpy.array(velocity)
+        
+        print "velocity in function (list):", velocity.tolist()
+        self.weightMatrices = (numpy.array(self.weightMatrices) + velocity).tolist()
+        print "velocity in function (list):", velocity.tolist()
+        return velocity
+
+
 
     def trainItem(self, inputs, targets, learningRate):
         self.feedForward(inputs, targets)
@@ -185,6 +196,53 @@ class FeedForwardNetwork:
                     break
 
                 self.gradientDescent(learningRate, dWeightsAverage)
+                i = 0
+                totalCost = 0
+                accumulatedWeights = (0 * numpy.array(self.weightMatrices)).tolist()
+                print "Batch #", batchNum
+                batchNum += 1
+            i += 1
+
+    def trainWithMomentum(self, trainingSize, learningRate, batchSize, alpha):
+        #write
+        f = open("XOR-training.txt", "w+")
+        for i in range(trainingSize):
+            a = bool(random.getrandbits(1))
+            b = bool(random.getrandbits(1))
+            f.write (str(int(a)) + " " + str(int(b)) + " " + str(int(a ^ b)) + "\n")
+            #f.write("This is line %d\r\n" % (i+1))
+
+        f.close()
+
+
+        alist = [line.rstrip() for line in open('XOR-training.txt')]
+        batchNum = 1
+        accumulatedWeights = (0 * numpy.array(self.weightMatrices)).tolist()
+        totalCost = 0
+        i = 1
+        self.lowestCost = sys.maxint
+        for line in alist:
+            #print(line.split())
+            trainingItem = line.split()
+            a = int(trainingItem[0])
+            b = int(trainingItem[1])
+            inputs = [a, b]
+            target = [int(trainingItem[2])]
+            self.feedForward(inputs, target)
+            accumulatedWeights = (numpy.array(accumulatedWeights) + numpy.array(self.backProp())).tolist()
+            #self.trainItem(inputs, target, learningRate)
+            totalCost += self.cost
+            velocity = accumulatedWeights = (0 * numpy.array(self.weightMatrices)).tolist()
+            if i == batchSize:
+                dWeightsAverage = (numpy.array(accumulatedWeights) / batchSize).tolist()
+                averageCost = totalCost / batchSize
+                print "total cost:", totalCost, "average cost:", averageCost
+                self.saveLowestState(averageCost)
+                if averageCost == 0:
+                    break
+
+                velocity = self.gradientDescentMomentum(learningRate, alpha, velocity, dWeightsAverage)
+                print "velocity outside function:", velocity
                 i = 0
                 totalCost = 0
                 accumulatedWeights = (0 * numpy.array(self.weightMatrices)).tolist()
