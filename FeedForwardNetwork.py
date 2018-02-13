@@ -1,3 +1,4 @@
+import sys
 import numpy
 import Layer
 import Neuron
@@ -134,6 +135,17 @@ class FeedForwardNetwork:
         self.feedForward(inputs, targets)
         self.backProp(learningRate)
 
+    #used for early stopping and saves the lowest cost encountered during last training run
+    def saveLowestState(self, cost):
+        if cost < self.lowestCost:
+            self.lowestWeights = self.weightMatrices
+            self.lowestCost = cost
+
+    #used to set network to state with lowest cost on last training run
+    def setToLowestState(self):
+        self.weightMatrices = self.lowestWeights
+        self.cost = self.lowestCost
+
 
     def train(self, trainingSize, learningRate, batchSize):
         #write
@@ -152,6 +164,7 @@ class FeedForwardNetwork:
         accumulatedWeights = (0 * numpy.array(self.weightMatrices)).tolist()
         totalCost = 0
         i = 1
+        self.lowestCost = sys.maxint
         for line in alist:
             #print(line.split())
             trainingItem = line.split()
@@ -167,6 +180,7 @@ class FeedForwardNetwork:
                 dWeightsAverage = (numpy.array(accumulatedWeights) / batchSize).tolist()
                 averageCost = totalCost / batchSize
                 print "total cost:", totalCost, "average cost:", averageCost
+                self.saveLowestState(averageCost)
                 if averageCost == 0:
                     break
 
